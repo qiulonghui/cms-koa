@@ -37,7 +37,7 @@ log.linGet(
 log.linGet(
   'getUserLogs',
   '/search',
-  log.permission('搜索日志'),
+  // log.permission('搜索日志'),
   groupRequired,
   async ctx => {
     const v = await new LogFindValidator().validate(ctx);

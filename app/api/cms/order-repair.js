@@ -1,4 +1,4 @@
-import { LinRouter, NotFound, disableLoading } from 'lin-mizar';
+import { LinRouter, NotFound } from 'lin-mizar';
 import { groupRequired, loginRequired } from '../../middleware/jwt';
 import {
   BookSearchValidator,
@@ -8,79 +8,79 @@ import { PositiveIdValidator } from '../../validator/common';
 
 import { getSafeParamId } from '../../lib/util';
 import { BookNotFound } from '../../lib/exception';
-import { BookDao } from '../../dao/book';
+import { OrderRepairDao } from '../../dao/order-repair';
 
-// book 的红图实例
-const bookApi = new LinRouter({
-  prefix: '/v1/book',
-  module: '图书'
+// orderRepair 的实例
+const orderRepairApi = new LinRouter({
+  prefix: '/v1/orderRepair',
+  module: '维修工单'
 });
 
-// book 的dao 数据库访问层实例
-const bookDto = new BookDao();
+// orderRepair 的dao 数据库访问层实例
+const orderRepairDao = new OrderRepairDao();
 
-bookApi.get('/:id', loginRequired, async ctx => {
+orderRepairApi.get('/:id', loginRequired, async ctx => {
   const v = await new PositiveIdValidator().validate(ctx);
   const id = v.get('path.id');
-  const book = await bookDto.getBook(id);
-  if (!book) {
+  const order = await orderRepairDao.getOrder(id);
+  if (!order) {
     throw new NotFound({
       code: 10022
     });
   }
-  ctx.json(book);
+  ctx.json(order);
 });
 
-bookApi.get('/', loginRequired, async ctx => {
-  const books = await bookDto.getBooks();
+orderRepairApi.get('/', loginRequired, async ctx => {
+  const orders = await orderRepairDao.getOrders();
   // if (!books || books.length < 1) {
   //   throw new NotFound({
   //     message: '没有找到相关书籍'
   //   });
   // }
-  ctx.json(books);
+  ctx.json(orders);
 });
 
-bookApi.get('/search/one', loginRequired, async ctx => {
+orderRepairApi.get('/search/one', loginRequired, async ctx => {
   const v = await new BookSearchValidator().validate(ctx);
-  const book = await bookDto.getBookByKeyword(v.get('query.q'));
-  if (!book) {
+  const order = await orderRepairDao.getOrderByKeyword(v.get('query.q'));
+  if (!order) {
     throw new BookNotFound();
   }
-  ctx.json(book);
+  ctx.json(order);
 });
 
-bookApi.post('/', loginRequired, async ctx => {
+orderRepairApi.post('/', loginRequired, async ctx => {
   const v = await new CreateOrUpdateBookValidator().validate(ctx);
-  await bookDto.createBook(v);
+  await orderRepairDao.createOrder(v);
   ctx.success({
     code: 12
   });
 });
 
-bookApi.put('/:id', loginRequired, async ctx => {
+orderRepairApi.put('/:id', loginRequired, async ctx => {
   const v = await new CreateOrUpdateBookValidator().validate(ctx);
   const id = getSafeParamId(ctx);
-  await bookDto.updateBook(v, id);
+  await orderRepairDao.updateOrder(v, id);
   ctx.success({
     code: 13
   });
 });
 
-bookApi.linDelete(
-  'deleteBook',
+orderRepairApi.linDelete(
+  'deleteOrder',
   '/:id',
-  bookApi.permission('删除图书'),
+  orderRepairApi.permission('删除维修工单'),
   loginRequired,
   groupRequired,
   async ctx => {
     const v = await new PositiveIdValidator().validate(ctx);
     const id = v.get('path.id');
-    await bookDto.deleteBook(id);
+    await orderRepairDao.del(id);
     ctx.success({
       code: 14
     });
   }
 );
 
-module.exports = { bookApi, [disableLoading]: false };
+module.exports = { orderRepairApi };
