@@ -2,7 +2,7 @@ import { LinRouter, NotFound } from 'lin-mizar';
 import { groupRequired, loginRequired } from '../../middleware/jwt';
 import {
   OrderRepairSearchValidator,
-  CreateOrUpdateOrderRepairValidator,
+  CreateOrUpdateOrderRepairValidator
 } from '../../validator/order-repair';
 import { PositiveIdValidator } from '../../validator/common';
 
@@ -13,7 +13,7 @@ import { OrderRepairDao } from '../../dao/order-repair';
 // orderRepair 的实例
 const orderRepairApi = new LinRouter({
   prefix: '/v1/orderRepair',
-  module: '维修工单',
+  module: '维修工单'
 });
 
 // orderRepair 的dao 数据库访问层实例
@@ -25,7 +25,7 @@ orderRepairApi.get('/:id', loginRequired, async (ctx) => {
   const order = await orderRepairDao.getOrder(id);
   if (!order) {
     throw new NotFound({
-      code: 10022,
+      code: 10022
     });
   }
   ctx.json(order);
@@ -54,7 +54,7 @@ orderRepairApi.post('/', loginRequired, async (ctx) => {
   const v = await new CreateOrUpdateOrderRepairValidator().validate(ctx);
   await orderRepairDao.createOrder(v, ctx);
   ctx.success({
-    code: 12,
+    code: 12
   });
 });
 
@@ -63,7 +63,7 @@ orderRepairApi.put('/:id', loginRequired, async (ctx) => {
   const id = getSafeParamId(ctx);
   await orderRepairDao.updateOrder(v, id);
   ctx.success({
-    code: 13,
+    code: 13
   });
 });
 
@@ -78,7 +78,7 @@ orderRepairApi.linDelete(
     const id = v.get('path.id');
     await orderRepairDao.del(id);
     ctx.success({
-      code: 14,
+      code: 14
     });
   }
 );
