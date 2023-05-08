@@ -14,7 +14,8 @@ class OrderRepair extends Model {
       desc: this.desc,
       creater_id: this.creater_id,
       creater: this.creater,
-      createTime: this.create_time
+      createTime: this.create_time,
+      state: this.state
     };
     return origin;
   }
@@ -54,6 +55,11 @@ OrderRepair.init(
     creater: {
       type: Sequelize.STRING(50),
       allowNull: false
+    },
+    state: {
+      type: Sequelize.STRING(20),
+      allowNull: false,
+      comment: '维修工单状态：待处理(pending)|处理中(processing)|已完工(completed)'
     }
   },
   merge(

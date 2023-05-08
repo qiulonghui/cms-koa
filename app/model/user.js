@@ -160,6 +160,11 @@ User.init(
     email: {
       type: Sequelize.STRING({ length: 100 }),
       allowNull: true
+    },
+    open_id: {
+      type: Sequelize.STRING({ length: 100 }),
+      unique: true,
+      allowNull: true
     }
   },
   merge(
