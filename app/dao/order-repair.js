@@ -3,32 +3,43 @@ import Sequelize from 'sequelize';
 import { OrderRepair } from '../model/order-repair';
 
 class OrderRepairDao {
-  async getOrder(id) {
+  async getOrder (id) {
     const order = await OrderRepair.findOne({
       where: {
-        id,
-      },
+        id
+      }
     });
     return order;
   }
 
-  async getOrderByKeyword(q) {
+  async getOrderByKeyword (q) {
     const order = await OrderRepair.findOne({
       where: {
         title: {
-          [Sequelize.Op.like]: `%${q}%`,
-        },
-      },
+          [Sequelize.Op.like]: `%${q}%`
+        }
+      }
     });
     return order;
   }
 
-  async getOrders() {
-    const orders = await OrderRepair.findAll();
-    return orders;
+  async getOrders (page, count1) {
+    console.log(11111111111, page, count1);
+
+    const { rows, count } = await OrderRepair.findAndCountAll({
+      // where: {
+      //   username: {
+      //     [Op.ne]: 'root'
+      //   }
+      // },
+      offset: (page - 1) * count1,
+      limit: count1
+    });
+    console.log(rows, count);
+    return { orders: rows, total: count };
   }
 
-  async createOrder(v, ctx) {
+  async createOrder (v, ctx) {
     // const order = await OrderRepair.findOne({
     //   where: {
     //     title: v.get('body.title')
@@ -48,15 +59,16 @@ class OrderRepairDao {
     ord.desc = v.get('body.desc');
     ord.creater = curUser.username;
     ord.creater_id = curUser.id;
+    ord.state = 'pending';
 
     await ord.save();
   }
 
-  async updateOrder(v, id) {
+  async updateOrder (v, id) {
     const order = await OrderRepair.findByPk(id);
     if (!order) {
       throw new NotFound({
-        code: 10022,
+        code: 10022
       });
     }
     order.title = v.get('body.title');
@@ -66,15 +78,15 @@ class OrderRepairDao {
     await order.save();
   }
 
-  async deleteBook(id) {
+  async deleteBook (id) {
     const order = await OrderRepair.findOne({
       where: {
-        id,
-      },
+        id
+      }
     });
     if (!order) {
       throw new NotFound({
-        code: 10022,
+        code: 10022
       });
     }
     order.destroy();

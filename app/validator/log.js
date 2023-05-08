@@ -3,12 +3,12 @@ import { PaginateValidator } from './common';
 import { isOptional } from '../lib/util';
 
 class LogFindValidator extends PaginateValidator {
-  constructor() {
+  constructor () {
     super();
     this.name = new Rule('isOptional');
   }
 
-  validateStart(data) {
+  validateStart (data) {
     const start = data.query.start;
     // 如果 start 为可选
     if (isOptional(start)) {
@@ -22,7 +22,7 @@ class LogFindValidator extends PaginateValidator {
     }
   }
 
-  validateEnd(data) {
+  validateEnd (data) {
     if (!data.query) {
       return true;
     }

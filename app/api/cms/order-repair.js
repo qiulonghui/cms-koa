@@ -4,7 +4,7 @@ import {
   OrderRepairSearchValidator,
   CreateOrUpdateOrderRepairValidator
 } from '../../validator/order-repair';
-import { PositiveIdValidator } from '../../validator/common';
+import { PositiveIdValidator, PaginateValidator } from '../../validator/common';
 
 import { getSafeParamId } from '../../lib/util';
 import { BookNotFound } from '../../lib/exception';
@@ -32,13 +32,19 @@ orderRepairApi.get('/:id', loginRequired, async (ctx) => {
 });
 
 orderRepairApi.get('/', loginRequired, async (ctx) => {
-  const orders = await orderRepairDao.getOrders();
-  // if (!books || books.length < 1) {
-  //   throw new NotFound({
-  //     message: '没有找到相关书籍'
-  //   });
-  // }
-  ctx.json(orders);
+  const v = await new PaginateValidator().validate(ctx);
+
+  const { orders, total } = await orderRepairDao.getOrders(
+    v.get('query.page'),
+    v.get('query.count')
+  );
+
+  ctx.json({
+    items: orders,
+    total,
+    count: v.get('query.count'),
+    page: v.get('query.page')
+  });
 });
 
 orderRepairApi.get('/search/one', loginRequired, async (ctx) => {

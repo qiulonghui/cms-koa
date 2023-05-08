@@ -4,7 +4,7 @@ import {
   parseHeader,
   RefreshException,
   TokenType,
-  routeMetaInfo,
+  routeMetaInfo
 } from 'lin-mizar';
 import { UserGroupModel } from '../model/user-group';
 import { GroupModel } from '../model/group';
@@ -16,20 +16,20 @@ import { Op } from 'sequelize';
 import { uniq } from 'lodash';
 
 // 是否超级管理员
-async function isAdmin(ctx) {
+async function isAdmin (ctx) {
   const userGroup = await UserGroupModel.findAll({
     where: {
-      user_id: ctx.currentUser.id,
-    },
+      user_id: ctx.currentUser.id
+    }
   });
   const groupIds = userGroup.map((v) => v.group_id);
   const is = await GroupModel.findOne({
     where: {
       level: GroupLevel.Root,
       id: {
-        [Op.in]: groupIds,
-      },
-    },
+        [Op.in]: groupIds
+      }
+    }
   });
   return is;
 }
@@ -37,12 +37,12 @@ async function isAdmin(ctx) {
 /**
  * 将 user 挂在 ctx 上
  */
-async function mountUser(ctx) {
+async function mountUser (ctx) {
   const { identity } = parseHeader(ctx);
   const user = await UserModel.findByPk(identity);
   if (!user) {
     throw new NotFound({
-      code: 10021,
+      code: 10021
     });
   }
   console.log('curUser', user.dataValues);
@@ -53,7 +53,7 @@ async function mountUser(ctx) {
 /**
  * 守卫函数，非超级管理员不可访问
  */
-async function adminRequired(ctx, next) {
+async function adminRequired (ctx, next) {
   if (ctx.request.method !== 'OPTIONS') {
     await mountUser(ctx);
 
@@ -61,7 +61,7 @@ async function adminRequired(ctx, next) {
       await next();
     } else {
       throw new AuthFailed({
-        code: 10001,
+        code: 10001
       });
     }
   } else {
@@ -72,7 +72,7 @@ async function adminRequired(ctx, next) {
 /**
  * 守卫函数，用户登陆即可访问
  */
-async function loginRequired(ctx, next) {
+async function loginRequired (ctx, next) {
   if (ctx.request.method !== 'OPTIONS') {
     await mountUser(ctx);
 
@@ -85,7 +85,7 @@ async function loginRequired(ctx, next) {
 /**
  * 守卫函数，用户刷新令牌，统一异常
  */
-async function refreshTokenRequiredWithUnifyException(ctx, next) {
+async function refreshTokenRequiredWithUnifyException (ctx, next) {
   if (ctx.request.method !== 'OPTIONS') {
     try {
       const { identity } = parseHeader(ctx, TokenType.REFRESH);
@@ -93,7 +93,7 @@ async function refreshTokenRequiredWithUnifyException(ctx, next) {
       if (!user) {
         ctx.throw(
           new NotFound({
-            code: 10021,
+            code: 10021
           })
         );
       }
@@ -111,7 +111,7 @@ async function refreshTokenRequiredWithUnifyException(ctx, next) {
 /**
  * 守卫函数，用于权限组鉴权
  */
-async function groupRequired(ctx, next) {
+async function groupRequired (ctx, next) {
   if (ctx.request.method !== 'OPTIONS') {
     await mountUser(ctx);
 
@@ -125,16 +125,16 @@ async function groupRequired(ctx, next) {
         const { permission, module } = routeMetaInfo.get(endpoint);
         const userGroup = await UserGroupModel.findAll({
           where: {
-            user_id: ctx.currentUser.id,
-          },
+            user_id: ctx.currentUser.id
+          }
         });
         const groupIds = userGroup.map((v) => v.group_id);
         const groupPermission = await GroupPermissionModel.findAll({
           where: {
             group_id: {
-              [Op.in]: groupIds,
-            },
-          },
+              [Op.in]: groupIds
+            }
+          }
         });
         const permissionIds = uniq(groupPermission.map((v) => v.permission_id));
         const item = await PermissionModel.findOne({
@@ -143,20 +143,20 @@ async function groupRequired(ctx, next) {
             mount: MountType.Mount,
             module,
             id: {
-              [Op.in]: permissionIds,
-            },
-          },
+              [Op.in]: permissionIds
+            }
+          }
         });
         if (item) {
           await next();
         } else {
           throw new AuthFailed({
-            code: 10001,
+            code: 10001
           });
         }
       } else {
         throw new AuthFailed({
-          code: 10001,
+          code: 10001
         });
       }
     }
@@ -169,5 +169,5 @@ export {
   adminRequired,
   loginRequired,
   groupRequired,
-  refreshTokenRequiredWithUnifyException,
+  refreshTokenRequiredWithUnifyException
 };
