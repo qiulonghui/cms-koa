@@ -2,7 +2,8 @@ import { LinRouter, NotFound } from 'lin-mizar';
 import { groupRequired, loginRequired } from '../../middleware/jwt';
 import {
   OrderRepairSearchValidator,
-  CreateOrUpdateOrderRepairValidator
+  CreateOrUpdateOrderRepairValidator,
+  UpdateOrderRepairStateValidator
 } from '../../validator/order-repair';
 import { PositiveIdValidator, PaginateValidator } from '../../validator/common';
 
@@ -67,11 +68,22 @@ orderRepairApi.post('/', loginRequired, async (ctx) => {
 orderRepairApi.put('/:id', loginRequired, async (ctx) => {
   const v = await new CreateOrUpdateOrderRepairValidator().validate(ctx);
   const id = getSafeParamId(ctx);
-  await orderRepairDao.updateOrder(v, id);
+  await orderRepairDao.updateOrder(v, id, ctx);
   ctx.success({
     code: 13
   });
 });
+
+orderRepairApi.put(
+  'updateOrderState',
+  '/:id/state', loginRequired, async (ctx) => {
+    const v = await new UpdateOrderRepairStateValidator().validate(ctx);
+    const id = getSafeParamId(ctx);
+    await orderRepairDao.updateOrderState(v, id);
+    ctx.success({
+      code: 2
+    });
+  });
 
 orderRepairApi.linDelete(
   'deleteOrder',

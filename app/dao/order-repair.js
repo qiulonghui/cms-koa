@@ -1,4 +1,4 @@
-import { NotFound, Forbidden } from 'lin-mizar';
+import { NotFound } from 'lin-mizar';
 import Sequelize from 'sequelize';
 import { OrderRepair } from '../model/order-repair';
 
@@ -24,8 +24,6 @@ class OrderRepairDao {
   }
 
   async getOrders (page, count1) {
-    console.log(11111111111, page, count1);
-
     const { rows, count } = await OrderRepair.findAndCountAll({
       // where: {
       //   username: {
@@ -35,7 +33,6 @@ class OrderRepairDao {
       offset: (page - 1) * count1,
       limit: count1
     });
-    console.log(rows, count);
     return { orders: rows, total: count };
   }
 
@@ -64,21 +61,25 @@ class OrderRepairDao {
     await ord.save();
   }
 
-  async updateOrder (v, id) {
+  async updateOrder (v, id, ctx) {
+    const curUser = ctx.currentUser;
     const order = await OrderRepair.findByPk(id);
     if (!order) {
       throw new NotFound({
         code: 10022
       });
     }
-    order.title = v.get('body.title');
-    order.author = v.get('body.author');
-    order.summary = v.get('body.summary');
-    order.image = v.get('body.image');
+    order.name = v.get('body.name');
+    order.phone = v.get('body.phone');
+    order.depart = v.get('body.depart');
+    order.address = v.get('body.address');
+    order.desc = v.get('body.desc');
+    order.creater = curUser.username;
+    order.creater_id = curUser.id;
     await order.save();
   }
 
-  async deleteBook (id) {
+  async deleteOrder (id) {
     const order = await OrderRepair.findOne({
       where: {
         id
@@ -90,6 +91,21 @@ class OrderRepairDao {
       });
     }
     order.destroy();
+  }
+
+  async updateOrderState (v, id) {
+    const order = await OrderRepair.findOne({
+      where: {
+        id
+      }
+    });
+    if (!order) {
+      throw new NotFound({
+        code: 10022
+      });
+    }
+    order.state = v.get('body.state');
+    await order.save();
   }
 }
 
