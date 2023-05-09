@@ -109,7 +109,7 @@ orderRepairApi.linDelete(
   async (ctx) => {
     const v = await new PositiveIdValidator().validate(ctx);
     const id = v.get('path.id');
-    await orderRepairDao.del(id);
+    await orderRepairDao.deleteOrder(id);
     ctx.success({
       code: 14
     });
