@@ -193,8 +193,14 @@ VALUES (1, 1, 'USERNAME_PASSWORD', 'root',
 INSERT INTO lin_group(id, name, info, level)
 VALUES (1, 'root', '超级用户组', 1);
 
+-- INSERT INTO lin_group(id, name, info, level)
+-- VALUES (2, 'guest', '游客组', 2);
+
 INSERT INTO lin_group(id, name, info, level)
-VALUES (2, 'guest', '游客组', 2);
+VALUES (3, '普通工单用户', '可创建工单用户组', 3);
+
+INSERT INTO lin_group(id, name, info, level)
+VALUES (4, '维修工程师', '可处理维修工单的用户', 3);
 
 INSERT INTO lin_user_group(id, user_id, group_id)
 VALUES (1, 1, 1);

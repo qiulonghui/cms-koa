@@ -34,18 +34,6 @@ user.linPost(
   async ctx => {
     const v = await new RegisterValidator().validate(ctx);
     await userDao.createUser(v);
-    if (config.getItem('socket.enable')) {
-      const username = v.get('body.username');
-      ctx.websocket.broadCast(
-        JSON.stringify({
-          name: username,
-          content: `管理员${ctx.currentUser.getDataValue(
-            'username'
-          )}新建了一个用户${username}`,
-          time: new Date()
-        })
-      );
-    }
     ctx.success({
       code: 11
     });

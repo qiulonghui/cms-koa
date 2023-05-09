@@ -1,4 +1,4 @@
-import { LinRouter, NotFound } from 'lin-mizar';
+import { LinRouter, NotFound, config } from 'lin-mizar';
 import { groupRequired, loginRequired } from '../../middleware/jwt';
 import {
   OrderRepairSearchValidator,
@@ -10,6 +10,7 @@ import { PositiveIdValidator, PaginateValidator } from '../../validator/common';
 import { getSafeParamId } from '../../lib/util';
 import { BookNotFound } from '../../lib/exception';
 import { OrderRepairDao } from '../../dao/order-repair';
+import dayjs from 'dayjs';
 
 // orderRepair 的实例
 const orderRepairApi = new LinRouter({
@@ -60,6 +61,15 @@ orderRepairApi.get('/search/one', loginRequired, async (ctx) => {
 orderRepairApi.post('/', loginRequired, async (ctx) => {
   const v = await new CreateOrUpdateOrderRepairValidator().validate(ctx);
   await orderRepairDao.createOrder(v, ctx);
+  if (config.getItem('socket.enable')) {
+    const orderCreaterName = ctx.currentUser.getDataValue('username') || '微信小程序用户';
+    ctx.websocket.broadCast(
+      JSON.stringify({
+        content: `${orderCreaterName} 创建了一个维修工单`,
+        time: dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
+      })
+    );
+  }
   ctx.success({
     code: 12
   });
@@ -74,16 +84,21 @@ orderRepairApi.put('/:id', loginRequired, async (ctx) => {
   });
 });
 
-orderRepairApi.put(
+orderRepairApi.linPut(
   'updateOrderState',
-  '/:id/state', loginRequired, async (ctx) => {
+  '/:id/state',
+  orderRepairApi.permission('修改维修工单状态'),
+  loginRequired,
+  // groupRequired,
+  async (ctx) => {
     const v = await new UpdateOrderRepairStateValidator().validate(ctx);
     const id = getSafeParamId(ctx);
     await orderRepairDao.updateOrderState(v, id);
     ctx.success({
       code: 2
     });
-  });
+  }
+);
 
 orderRepairApi.linDelete(
   'deleteOrder',
