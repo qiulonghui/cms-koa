@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest test",
     "start:dev": "cross-env NODE_ENV=development nodemon",
-    "start:prod": "cross-env NODE_ENV=production node index",
+    "start:prod": "cross-env NODE_ENV=production pm2 start index.js",
     "prettier": "prettier --write app/**/*.js app/*.js app/**/**/*.js app/**/**/**/*.js test/**/*.js && eslint app test --fix"
   },
   "keywords": [
@@ -56,6 +56,7 @@
     "koa-static": "^5.0.0",
     "lin-mizar": "^0.3.9",
     "mysql2": "^2.1.0",
+    "pm2": "^5.3.0",
     "sequelize": "^5.21.13",
     "sharp": "^0.29.0",
     "svg-captcha": "^1.4.0",
