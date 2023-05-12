@@ -70,7 +70,7 @@ bookApi.put('/:id', loginRequired, async ctx => {
 bookApi.linDelete(
   'deleteBook',
   '/:id',
-  bookApi.permission('删除图书'),
+  // bookApi.permission('删除图书'),
   loginRequired,
   groupRequired,
   async ctx => {
