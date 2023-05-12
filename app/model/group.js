@@ -2,6 +2,7 @@ import { Model, Sequelize } from 'sequelize';
 import { InfoCrudMixin } from 'lin-mizar';
 import { has, get, merge } from 'lodash';
 import sequelize from '../lib/db';
+import { GroupLevel } from '../lib/type';
 
 class Group extends Model {
   toJSON () {
@@ -36,8 +37,8 @@ Group.init(
     },
     level: {
       type: Sequelize.INTEGER(2),
-      defaultValue: 3,
-      comment: '分组级别 1：root 2：guest 3：user（root、guest分组只能存在一个)'
+      defaultValue: GroupLevel.User,
+      comment: '分组级别 1：root 2：builtIn 3：user（root、builtIn分组只能存在一个)'
     }
   },
   merge(

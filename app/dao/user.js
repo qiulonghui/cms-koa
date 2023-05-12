@@ -221,35 +221,36 @@ class UserDao {
       );
 
       const groupIds = v.get('body.group_ids');
-      if (groupIds && groupIds.length > 0) {
-        for (const id of v.get('body.group_ids') || []) {
-          await UserGroupModel.create(
-            {
-              user_id,
-              group_id: id
-            },
-            {
-              transaction
-            }
-          );
-        }
-      } else {
-        // 未指定分组，默认加入游客分组
-        const guest = await GroupModel.findOne({
-          where: {
-            level: GroupLevel.Guest
+      for (const id of groupIds || []) {
+        await UserGroupModel.create(
+          {
+            user_id,
+            group_id: id
+          },
+          {
+            transaction
           }
-        });
-        await UserGroupModel.create({
-          user_id,
-          group_id: guest.id
-        });
+        );
       }
+
+      // 未指定分组，默认加入普通分组
+      // const guest = await GroupModel.findOne({
+      //   where: {
+      //     level: GroupLevel.User
+      //   }
+      // });
+      // await UserGroupModel.create({
+      //   user_id,
+      //   group_id: guest.id
+      // });
+      // throw new Failed({
+      //   code: 10071
+      // });
+
       await transaction.commit();
     } catch (error) {
       if (transaction) await transaction.rollback();
     }
-    return true;
   }
 
   formatPermissions (permissions) {

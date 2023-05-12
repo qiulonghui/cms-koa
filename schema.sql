@@ -72,7 +72,7 @@ CREATE TABLE lin_group
     id          int(10) unsigned NOT NULL AUTO_INCREMENT,
     name        varchar(60)      NOT NULL COMMENT '分组名称，例如：搬砖者',
     info        varchar(255)              DEFAULT NULL COMMENT '分组信息：例如：搬砖的人',
-    level       tinyint(2)       NOT NULL DEFAULT 3 COMMENT '分组级别 1：root 2：guest 3：user（root、guest分组只能存在一个)',
+    level       tinyint(2)       NOT NULL DEFAULT 3 COMMENT '分组级别 1：root builtIn 3：user（root、builtIn分组只能存在一个)',
     create_time datetime(3)      NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     update_time datetime(3)      NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
     delete_time datetime(3)               DEFAULT NULL,
@@ -194,13 +194,13 @@ INSERT INTO lin_group(id, name, info, level)
 VALUES (1, 'root', '超级用户组', 1);
 
 -- INSERT INTO lin_group(id, name, info, level)
--- VALUES (2, 'guest', '游客组', 2);
+-- VALUES (2, 'builtIn', '游客组', 2);
 
 INSERT INTO lin_group(id, name, info, level)
-VALUES (3, '普通工单用户', '可创建工单用户组', 3);
+VALUES (3, '普通工单用户', '可创建工单用户组', 2);
 
 INSERT INTO lin_group(id, name, info, level)
-VALUES (4, '维修工程师', '可处理维修工单的用户', 3);
+VALUES (4, '维修工程师', '可处理维修工单的用户', 2);
 
 INSERT INTO lin_user_group(id, user_id, group_id)
 VALUES (1, 1, 1);

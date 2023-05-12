@@ -337,7 +337,7 @@ class AdminDao {
       throw new Forbidden({
         code: 10074
       });
-    } else if (group.level === GroupLevel.Guest) {
+    } else if (group.level === GroupLevel.BuiltIn) {
       throw new Forbidden({
         code: 10075
       });

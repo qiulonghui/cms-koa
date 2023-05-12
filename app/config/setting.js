@@ -2,7 +2,7 @@ const path = require('path');
 
 console.log(process.env.NODE_ENV);
 module.exports = {
-  port: 5000,
+  port: 5001,
   siteDomain: 'http://localhost:5000',
   countDefault: 10,
   pageDefault: 0,

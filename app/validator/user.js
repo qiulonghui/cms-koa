@@ -21,6 +21,12 @@ class RegisterValidator extends LinValidator {
       )
     ];
     this.confirm_password = new Rule('isNotEmpty', '确认密码不可为空');
+    this.group_ids = new Rule(function (value) {
+      if (value.length === 0) {
+        return false;
+      };
+      return true;
+    }, '请选择一个分组');
   }
 
   validateConfirmPassword (data) {

@@ -44,7 +44,7 @@ describe('/cms/admin', () => {
       credential: 'sha1$c419e500$1$84869e5560ebf3de26b6690386484929456d6c07'
     });
     await GroupModel.create({ name: 'root', info: '超级用户组', level: 1 });
-    await GroupModel.create({ name: 'guest', info: '游客组', level: 2 });
+    // await GroupModel.create({ name: 'guest', info: '游客组', level: 2 });
     await UserGroupModel.create({ user_id: 1, group_id: 1 });
     done();
   });

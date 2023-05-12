@@ -9,7 +9,7 @@ const IdentityType = {
 
 const GroupLevel = {
   Root: 1,
-  Guest: 2,
+  BuiltIn: 2,
   User: 3
 };
 
