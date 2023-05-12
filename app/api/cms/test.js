@@ -19,7 +19,7 @@ test.get('/', async ctx => {
 test.linGet(
   'getTestMessage',
   '/json',
-  test.permission('测试日志记录'),
+  // test.permission('测试日志记录'),
   loginRequired,
   logger('{user.username}就是皮了一波'),
   async ctx => {
@@ -32,7 +32,7 @@ test.linGet(
 test.linGet(
   'getTestInfo',
   '/info',
-  test.permission('查看lin的信息'),
+  // test.permission('查看lin的信息'),
   groupRequired,
   async ctx => {
     ctx.json({
