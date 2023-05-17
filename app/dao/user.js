@@ -17,6 +17,7 @@ import { MountType, GroupLevel, IdentityType } from '../lib/type';
 import { Op } from 'sequelize';
 import { set, has, uniq } from 'lodash';
 import { verifyCaptcha } from '../lib/captcha';
+import { getWxOpenId } from '../lib/util';
 
 class UserDao {
   async createUser (v) {
@@ -58,7 +59,7 @@ class UserDao {
     await this.registerUser(v);
   }
 
-  async getTokens (v, ctx) {
+  async byUsernameLogin (v, ctx) {
     if (config.getItem('loginCaptchaEnabled', false)) {
       const tag = ctx.req.headers.tag;
       const captcha = v.get('body.captcha');
@@ -276,6 +277,56 @@ class UserDao {
       set(tmp, k, map[k]);
       return tmp;
     });
+  }
+
+  async getUserByOpenid (openid) {
+    const user = await UserModel.findOne({
+      where: {
+        openid
+      }
+    });
+    return user;
+  }
+
+  async registerByOpenid (openid) {
+    const transaction = await sequelize.transaction();
+    try {
+      const user = await UserModel.create({
+        openid
+      }, {
+        transaction
+      });
+      const user_id = user.user_id;
+      await UserIdentityModel.create(
+        {
+          user_id,
+          identity_type: IdentityType.OpenID,
+          identifier: openid
+        },
+        {
+          transaction
+        }
+      );
+      await transaction.commit();
+      return user;
+    } catch (error) {
+      if (transaction) await transaction.rollback();
+    }
+  }
+
+  async getTokensByOpenid (v) {
+    const openid = await getWxOpenId(v.get('get.code'));
+    let user = await this.getUserByOpenid(openid);
+    if (!user) {
+      user = await this.registerByOpenid(openid);
+    }
+    const { accessToken, refreshToken } = await getTokens({
+      id: user.user_id
+    });
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken
+    };
   }
 }
 

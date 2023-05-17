@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@koa/cors": "^2.2.3",
+    "axios": "^1.4.0",
     "crypto": "^1.0.1",
     "dayjs": "^1.11.7",
     "koa": "^2.7.0",

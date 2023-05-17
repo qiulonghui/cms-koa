@@ -1,5 +1,7 @@
 import { toSafeInteger, get, isInteger } from 'lodash';
-import { ParametersException } from 'lin-mizar';
+import { ParametersException, Failed, config } from 'lin-mizar';
+
+const axios = require('axios');
 
 function getSafeParamId (ctx) {
   const id = toSafeInteger(get(ctx.params, 'id'));
@@ -25,4 +27,25 @@ function isOptional (val) {
   return false;
 }
 
-export { getSafeParamId, isOptional };
+async function getWxOpenId (code) {
+  const wx = config.getItem('wx');
+  const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${wx.appSecret}&js_code=${code}grant_type=authorization_code`;
+  const response = await axios.get(url);
+  if (response.status !== 200) {
+    throw new Failed({
+      code: 11001,
+      message: 'openid获取失败'
+    });
+  }
+  const errcode = response.data.errcode;
+  const errmsg = response.data.errmsg;
+  if (errcode) {
+    throw new Failed({
+      code: 11001,
+      message: 'openid获取失败:' + errmsg
+    });
+  }
+  return response.data.openid;
+}
+
+export { getSafeParamId, isOptional, getWxOpenId };

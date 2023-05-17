@@ -6,7 +6,6 @@ import serve from 'koa-static';
 import { config, json, logging, success, jwt, Loader } from 'lin-mizar';
 import { PermissionModel } from './model/permission';
 import WebSocket from './extension/socket/socket';
-
 /**
  * 首页
  */

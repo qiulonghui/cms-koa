@@ -1,9 +1,10 @@
 const path = require('path');
 
-console.log(process.env.NODE_ENV);
+const port = process.env.NODE_ENV === 'development' ? 6001 : 5000;
+const siteDomain = 'http://localhost:' + port;
 module.exports = {
-  port: 5000,
-  siteDomain: 'http://localhost:5000',
+  port,
+  siteDomain,
   countDefault: 10,
   pageDefault: 0,
   apiDir: 'app/api',
@@ -27,5 +28,9 @@ module.exports = {
     // },
   },
   // 是否开启登录验证码
-  loginCaptchaEnabled: false
+  loginCaptchaEnabled: false,
+  wx: {
+    appId: 'wxb8037aea7bbd6701',
+    appSecret: 'a0a58c295ed31da734b550bb790bf5e2'
+  }
 };

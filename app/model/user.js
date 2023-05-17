@@ -142,7 +142,6 @@ User.init(
     },
     username: {
       type: Sequelize.STRING({ length: 24 }),
-      allowNull: false,
       comment: '用户名，唯一'
     },
     nickname: {
@@ -158,13 +157,11 @@ User.init(
       // }
     },
     email: {
-      type: Sequelize.STRING({ length: 100 }),
-      allowNull: true
+      type: Sequelize.STRING({ length: 100 })
     },
     open_id: {
       type: Sequelize.STRING({ length: 100 }),
-      unique: true,
-      allowNull: true
+      unique: true
     }
   },
   merge(

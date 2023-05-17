@@ -1,7 +1,7 @@
 import { LinRouter, getTokens, config } from 'lin-mizar';
 import {
-  RegisterValidator,
-  LoginValidator,
+  RegisterByUsernameValidator,
+  LoginByUsernameValidator,
   UpdateInfoValidator,
   ChangePasswordValidator
 } from '../../validator/user';
@@ -32,7 +32,7 @@ user.linPost(
   adminRequired,
   logger('管理员新建了一个用户'),
   async ctx => {
-    const v = await new RegisterValidator().validate(ctx);
+    const v = await new RegisterByUsernameValidator().validate(ctx);
     await userDao.createUser(v);
     ctx.success({
       code: 11
@@ -41,8 +41,8 @@ user.linPost(
 );
 
 user.linPost('userLogin', '/login', user.permission('登录'), async ctx => {
-  const v = await new LoginValidator().validate(ctx);
-  const { accessToken, refreshToken } = await userDao.getTokens(v, ctx);
+  const v = await new LoginByUsernameValidator().validate(ctx);
+  const { accessToken, refreshToken } = await userDao.byUsernameLogin(v, ctx);
   ctx.json({
     access_token: accessToken,
     refresh_token: refreshToken

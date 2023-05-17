@@ -2,7 +2,7 @@ import { config, LinValidator, Rule } from 'lin-mizar';
 import { isOptional } from '../lib/util';
 import validator from 'validator';
 
-class RegisterValidator extends LinValidator {
+class RegisterByUsernameValidator extends LinValidator {
   constructor () {
     super();
     this.username = [
@@ -61,7 +61,7 @@ class RegisterValidator extends LinValidator {
   }
 }
 
-class LoginValidator extends LinValidator {
+class LoginByUsernameValidator extends LinValidator {
   constructor () {
     super();
     this.username = new Rule('isNotEmpty', '用户名不可为空');
@@ -70,6 +70,13 @@ class LoginValidator extends LinValidator {
     if (config.getItem('loginCaptchaEnabled', false)) {
       this.captcha = new Rule('isNotEmpty', '验证码不能为空');
     }
+  }
+}
+
+class LoginByWxcodeValidator extends LinValidator {
+  constructor () {
+    super();
+    this.code = new Rule('isNotEmpty', 'code码不可为空');
   }
 }
 
@@ -136,7 +143,8 @@ class AvatarUpdateValidator extends LinValidator {
 export {
   ChangePasswordValidator,
   UpdateInfoValidator,
-  LoginValidator,
-  RegisterValidator,
+  LoginByUsernameValidator,
+  LoginByWxcodeValidator,
+  RegisterByUsernameValidator,
   AvatarUpdateValidator
 };
