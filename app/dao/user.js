@@ -1,6 +1,7 @@
 import {
   RepeatException,
   generate,
+  Failed,
   NotFound,
   Forbidden,
   config,
@@ -282,7 +283,7 @@ class UserDao {
   async getUserByOpenid (openid) {
     const user = await UserModel.findOne({
       where: {
-        openid
+        open_id: openid
       }
     });
     return user;
@@ -292,11 +293,11 @@ class UserDao {
     const transaction = await sequelize.transaction();
     try {
       const user = await UserModel.create({
-        openid
+        open_id: openid
       }, {
         transaction
       });
-      const user_id = user.user_id;
+      const user_id = user.id;
       await UserIdentityModel.create(
         {
           user_id,
@@ -310,22 +311,27 @@ class UserDao {
       await transaction.commit();
       return user;
     } catch (error) {
+      console.log(error);
       if (transaction) await transaction.rollback();
+      throw new Failed({
+        code: 11010,
+        message: '创建微信用户失败'
+      });
     }
   }
 
   async getTokensByOpenid (v) {
-    const openid = await getWxOpenId(v.get('get.code'));
+    const openid = await getWxOpenId(v.get('query.code'));
     let user = await this.getUserByOpenid(openid);
     if (!user) {
       user = await this.registerByOpenid(openid);
     }
-    const { accessToken, refreshToken } = await getTokens({
-      id: user.user_id
+    const { accessToken, refreshToken } = getTokens({
+      id: user.id
     });
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken
+      accessToken,
+      refreshToken
     };
   }
 }

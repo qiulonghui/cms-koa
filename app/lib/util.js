@@ -29,7 +29,7 @@ function isOptional (val) {
 
 async function getWxOpenId (code) {
   const wx = config.getItem('wx');
-  const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${wx.appSecret}&js_code=${code}grant_type=authorization_code`;
+  const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appId}&secret=${wx.appSecret}&js_code=${code}&grant_type=authorization_code`;
   const response = await axios.get(url);
   if (response.status !== 200) {
     throw new Failed({
