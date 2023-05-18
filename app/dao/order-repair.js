@@ -31,7 +31,10 @@ class OrderRepairDao {
       //   }
       // },
       offset: (page - 1) * count1,
-      limit: count1
+      limit: count1,
+      order: [
+        ['create_time', 'DESC']
+      ]
     });
     return { orders: rows, total: count };
   }
@@ -54,7 +57,7 @@ class OrderRepairDao {
     ord.depart = v.get('body.depart');
     ord.address = v.get('body.address');
     ord.desc = v.get('body.desc');
-    ord.creater = curUser.username;
+    ord.creater = curUser.username || '微信小程序用户';
     ord.creater_id = curUser.id;
     ord.state = 'pending';
 
@@ -62,7 +65,7 @@ class OrderRepairDao {
   }
 
   async updateOrder (v, id, ctx) {
-    const curUser = ctx.currentUser;
+    // const curUser = ctx.currentUser;
     const order = await OrderRepair.findByPk(id);
     if (!order) {
       throw new NotFound({
@@ -74,8 +77,8 @@ class OrderRepairDao {
     order.depart = v.get('body.depart');
     order.address = v.get('body.address');
     order.desc = v.get('body.desc');
-    order.creater = curUser.username;
-    order.creater_id = curUser.id;
+    // order.creater = curUser.username;
+    // order.creater_id = curUser.id;
     await order.save();
   }
 
