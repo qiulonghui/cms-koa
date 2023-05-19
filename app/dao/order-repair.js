@@ -39,6 +39,23 @@ class OrderRepairDao {
     return { orders: rows, total: count };
   }
 
+  async getOwnOrders (v, ctx) {
+    const curUser = ctx.currentUser;
+    const page = v.get('query.page');
+    const count1 = v.get('query.count');
+    const { rows, count } = await OrderRepair.findAndCountAll({
+      where: {
+        creater_id: curUser.id
+      },
+      offset: (page - 1) * count1,
+      limit: count1,
+      order: [
+        ['create_time', 'DESC']
+      ]
+    });
+    return { orders: rows, total: count };
+  }
+
   async createOrder (v, ctx) {
     // const order = await OrderRepair.findOne({
     //   where: {

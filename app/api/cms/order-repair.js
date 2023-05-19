@@ -21,6 +21,21 @@ const orderRepairApi = new LinRouter({
 // orderRepair 的dao 数据库访问层实例
 const orderRepairDao = new OrderRepairDao();
 
+orderRepairApi.get('/own', loginRequired, async (ctx) => {
+  const v = await new PaginateValidator().validate(ctx);
+
+  const { orders, total } = await orderRepairDao.getOwnOrders(
+    v, ctx
+  );
+
+  ctx.json({
+    items: orders,
+    total,
+    count: v.get('query.count'),
+    page: v.get('query.page')
+  });
+});
+
 orderRepairApi.get('/:id', loginRequired, async (ctx) => {
   const v = await new PositiveIdValidator().validate(ctx);
   const id = v.get('path.id');
