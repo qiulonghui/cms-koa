@@ -45,7 +45,7 @@ async function mountUser (ctx) {
       code: 10021
     });
   }
-  console.log('curUser', user.dataValues);
+  console.log('curUser', user.toJSON());
   // 将user挂在ctx上
   ctx.currentUser = user;
 }
