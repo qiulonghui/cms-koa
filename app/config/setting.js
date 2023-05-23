@@ -1,7 +1,7 @@
 const path = require('path');
 
 const port = process.env.NODE_ENV === 'development' ? 6001 : 5000;
-const siteDomain = 'http://localhost:' + port;
+const siteDomain = process.env.NODE_ENV === 'development' ? ('http://localhost:' + port) : 'https://2h94609x15.imdo.co';
 module.exports = {
   port,
   siteDomain,
