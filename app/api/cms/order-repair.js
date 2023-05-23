@@ -11,6 +11,15 @@ import { getSafeParamId } from '../../lib/util';
 import { BookNotFound } from '../../lib/exception';
 import { OrderRepairDao } from '../../dao/order-repair';
 import dayjs from 'dayjs';
+import Router from 'koa-router';
+
+const api = new Router({ prefix: '/api' });
+
+api.get('/app', async ctx => {
+  ctx.json({
+    env: 'prod' // dev|prod 决定了小程序发布时的环境
+  });
+});
 
 // orderRepair 的实例
 const orderRepairApi = new LinRouter({
@@ -131,4 +140,4 @@ orderRepairApi.linDelete(
   }
 );
 
-module.exports = { orderRepairApi };
+module.exports = { api, orderRepairApi };
